@@ -33,12 +33,12 @@ liikumine = 0
     # taustapilt
 taust = pygame.image.load('images/background.png').convert()
     # põranda pilt
-põrand = pygame.image.load('images/põrand.png').convert()
+põrand = pygame.image.load('images/porand.png').convert()
     # mängija pilt ja hitbox
 mängija = pygame.image.load('images/kast.png').convert()
 mängija_rect = mängija.get_rect(center = (150, ekraan_y // 2))
     # väravad
-värav = pygame.image.load('images/värav.png').convert()
+värav = pygame.image.load('images/varav.png').convert()
 väravad = []
 
 # loeb txt failist high skoori
@@ -63,7 +63,7 @@ while True:
             elif event.key == pygame.K_SPACE and mäng == False:
                 väravad.clear()
                 mängija_rect = mängija.get_rect(center = (150, ekraan_y // 2))
-                liikumine = 0
+                liikumine = -10
                 skoor = 0
                 text_skoor = font.render(f'{int(skoor)}', True, (255, 0, 0))
                 mäng = True
