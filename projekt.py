@@ -8,8 +8,8 @@ def tekita_värav(item, y, h, a):
     return alumine_värav, ülemine_värav
 
 def tekita_tekst(item, y, h, a):
-    alumine_tekst = choice.get_rect(midtop = (a-3, y))
-    ülemine_tekst = choice.get_rect(midbottom = (a-3, h))
+    alumine_tekst = item.get_rect(midtop = (a, y))
+    ülemine_tekst = item.get_rect(midbottom = (a, h))
     return alumine_tekst, ülemine_tekst
 
 def liiguta_värav(väravad):
@@ -26,11 +26,6 @@ def joonista_aine(ained):
     for i in ained:
         ekraan.blit(aine, i)
     return väravad
-
-def rotate(pilt, nurk, y):
-    keeratud_pilt = pygame.transform.rotozoom(pilt, nurk, 1)
-    keeratud_rect = keeratud_pilt.get_rect(center = (150, y))
-    return keeratud_pilt, keeratud_rect
 
 # algsätted
 ekraan_x = 600
@@ -55,24 +50,26 @@ põrand = pygame.image.load('images/porand.png').convert()
 mängija = pygame.image.load('images/kast.png').convert_alpha()
 mängija = pygame.transform.scale(mängija,(40,40))
 mängija_rect = mängija.get_rect(center = (150, ekraan_y // 2))
-nurk = 0
     # väravad
 värav = pygame.image.load('images/varav.png').convert()
 väravad = []
 ained = []
-
-text = [' MMP ', ' AAR ', ' OOP ', ' KM1 ']
-font = pygame.font.SysFont(None, 150)
 
 # loeb txt failist high skoori
 f = open('high.txt')
 high_skoor = int(f.readline().strip())
 f.close()
 skoor = 0
-font = pygame.font.SysFont('Arial', 100)
-text_high_skoor = font.render(f'High score: {high_skoor}', True, (255, 0, 0))
-text_skoor = font.render(f'{int(skoor)}', True, (255, 0, 0))
-text_raskus = font.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
+
+# fondid
+text = ['  MMP  ', '  AAR  ', '  OOP  ', '  KM1  ']
+font = pygame.font.SysFont('Gabriola', 150)
+font_skoor = pygame.font.SysFont('Roboto', 100)
+font_text = pygame.font.SysFont('Roboto', 28)
+text_high_skoor = font_text.render(f'Kõige rohkem kogutud EAP: {high_skoor}', True, (255, 0, 0))
+text_skoor = font_skoor.render(f'{int(skoor)} EAP', True, (255, 0, 0))
+text_raskus = font_text.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
+text_raskus_hint = font_text.render('''Vajuta 'K', et muuta raskustaset''', True, (255, 0, 0))
 
 mäng = False
 while True:
@@ -90,13 +87,13 @@ while True:
                     raskus_indeks = 0
                 väravad.clear()
                 ained.clear()
-                text_raskus = font.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
+                text_raskus = font_text.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
                 pygame.time.set_timer(värava_tekkimine, raskusaste[raskus_indeks][1])
             elif event.key == pygame.K_q and mäng == False:
                 raskus_indeks = 3
                 väravad.clear()
                 ained.clear()
-                text_raskus = font.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
+                text_raskus = font_text.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
                 pygame.time.set_timer(värava_tekkimine, raskusaste[raskus_indeks][1])
             elif event.key == pygame.K_SPACE and mäng == False:
                 väravad.clear()
@@ -104,7 +101,7 @@ while True:
                 mängija_rect = mängija.get_rect(center = (150, ekraan_y // 2))
                 liikumine = -10
                 skoor = 0
-                text_skoor = font.render(f'{int(skoor)}', True, (255, 0, 0))
+                text_skoor = font_skoor.render(f'{int(skoor)}', True, (255, 0, 0))
                 mäng = True
  
         if event.type == värava_tekkimine:
@@ -117,20 +114,16 @@ while True:
             choice = random.choice(text)
             aine = font.render(choice, True, (255,0,0))
             aine = pygame.transform.rotate(aine, -90)
-            ained.extend(tekita_värav(aine, punkt, kõrgus, kaugus))
+            ained.extend(tekita_värav(aine, punkt, kõrgus, kaugus-14))
 
     # ekraanile ilmub taust
     ekraan.blit(taust, (0, 0))
-    
     
     if mäng:
         # mängija liikumine
         liikumine += 0.3
         mängija_rect.centery += liikumine
-        nurk -= 1
-        y_suurus = mängija_rect.centery
-        mängija_rotated, mängija_rotated_rect = rotate(mängija, nurk, y_suurus)
-        ekraan.blit(mängija_rotated, mängija_rotated_rect)
+        ekraan.blit(mängija, mängija_rect)
         
         # väravad
         väravad = liiguta_värav(väravad)
@@ -144,7 +137,7 @@ while True:
                 mäng = False
             if mängija_rect.centerx in list(range(i.centerx-2, i.centerx+2)):
                 skoor += 0.5
-                text_skoor = font.render(f'{int(skoor)}', True, (255, 0, 0))
+                text_skoor = font_skoor.render(f'{int(skoor)}', True, (255, 0, 0))
         # collision põranda, katusega
         if mängija_rect.top <= 0 or mängija_rect.bottom >= ekraan_y - 80:
             mäng = False
@@ -155,17 +148,17 @@ while True:
         ekraan.blit(mängija, (150, ekraan_x // 2))
         if skoor > high_skoor:
             high_skoor = int(skoor)
-            text_high_skoor = font.render(f'High score: {high_skoor}', True, (255, 0, 0))
+            text_high_skoor = font_text.render(f'Kõige rohkem kogutud EAP: {high_skoor}', True, (255, 0, 0))
             
             f = open('high.txt', 'w')
             f.write(str(high_skoor))
             f.close()
         
-        ekraan.blit(text_raskus, (10, 600))
-        ekraan.blit(text_high_skoor, (10, 10))
+        text_skoor = font_skoor.render(f'{int(skoor)} EAP', True, (255, 0, 0))
+        ekraan.blit(text_raskus_hint, (150, 600))
+        ekraan.blit(text_raskus, (430, 20))
+        ekraan.blit(text_high_skoor, (20, 20))
         ekraan.blit(text_skoor, (ekraan_x // 2 - 33, ekraan_y // 8))
-        
-        
     
     # ekraanile ilmub põrand
     ekraan.blit(põrand, (0, ekraan_y - 80))
