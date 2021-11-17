@@ -7,6 +7,11 @@ def tekita_värav(item, y, h, a):
     ülemine_värav = item.get_rect(midbottom = (a, h))
     return alumine_värav, ülemine_värav
 
+def tekita_tekst(item, y, h, a):
+    alumine_tekst = choice.get_rect(midtop = (a-3, y))
+    ülemine_tekst = choice.get_rect(midbottom = (a-3, h))
+    return alumine_tekst, ülemine_tekst
+
 def liiguta_värav(väravad):
     for i in väravad:
         i.centerx -= 4
@@ -22,10 +27,15 @@ def joonista_aine(ained):
         ekraan.blit(aine, i)
     return väravad
 
+def rotate(pilt, nurk, y):
+    keeratud_pilt = pygame.transform.rotozoom(pilt, nurk, 1)
+    keeratud_rect = keeratud_pilt.get_rect(center = (150, y))
+    return keeratud_pilt, keeratud_rect
+
 # algsätted
 ekraan_x = 600
 ekraan_y = 800
-raskusaste = [(60, 1800), (90, 1200), (120, 800), (150, 600)]
+raskusaste = [(60, 1800), (90, 1200), (120, 800), (175, 600)]
 raskus_sõne = ['Easy', 'Medium', 'Hard', 'Ultra']
 raskus_indeks = 1
 
@@ -45,15 +55,14 @@ põrand = pygame.image.load('images/porand.png').convert()
 mängija = pygame.image.load('images/kast.png').convert_alpha()
 mängija = pygame.transform.scale(mängija,(40,40))
 mängija_rect = mängija.get_rect(center = (150, ekraan_y // 2))
+nurk = 0
     # väravad
 värav = pygame.image.load('images/varav.png').convert()
 väravad = []
 ained = []
 
-text = ' MMP '
+text = [' MMP ', ' AAR ', ' OOP ', ' KM1 ']
 font = pygame.font.SysFont(None, 150)
-aine = font.render(text, True, (255,0,0))
-aine = pygame.transform.rotate(aine, -90)
 
 # loeb txt failist high skoori
 f = open('high.txt')
@@ -79,10 +88,14 @@ while True:
                 raskus_indeks += 1
                 if raskus_indeks > 2:
                     raskus_indeks = 0
+                väravad.clear()
+                ained.clear()
                 text_raskus = font.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
                 pygame.time.set_timer(värava_tekkimine, raskusaste[raskus_indeks][1])
             elif event.key == pygame.K_q and mäng == False:
                 raskus_indeks = 3
+                väravad.clear()
+                ained.clear()
                 text_raskus = font.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
                 pygame.time.set_timer(värava_tekkimine, raskusaste[raskus_indeks][1])
             elif event.key == pygame.K_SPACE and mäng == False:
@@ -100,7 +113,11 @@ while True:
             kõrgus = punkt - random.randint(220, 300)
             kaugus = ekraan_x + 100
             väravad.extend(tekita_värav(värav, punkt, kõrgus, kaugus))
-            ained.extend(tekita_värav(aine, punkt, kõrgus, kaugus-6))
+            
+            choice = random.choice(text)
+            aine = font.render(choice, True, (255,0,0))
+            aine = pygame.transform.rotate(aine, -90)
+            ained.extend(tekita_värav(aine, punkt, kõrgus, kaugus))
 
     # ekraanile ilmub taust
     ekraan.blit(taust, (0, 0))
@@ -110,7 +127,10 @@ while True:
         # mängija liikumine
         liikumine += 0.3
         mängija_rect.centery += liikumine
-        ekraan.blit(mängija, mängija_rect)
+        nurk -= 1
+        y_suurus = mängija_rect.centery
+        mängija_rotated, mängija_rotated_rect = rotate(mängija, nurk, y_suurus)
+        ekraan.blit(mängija_rotated, mängija_rotated_rect)
         
         # väravad
         väravad = liiguta_värav(väravad)
