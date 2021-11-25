@@ -22,10 +22,16 @@ def joonista_värav(väravad):
         ekraan.blit(värav, i)
     return väravad
 
-def joonista_aine(ained):
+def joonista_aine1(ained):
     for i in ained:
-        ekraan.blit(aine, i)
-    return väravad
+        ekraan.blit(aine1, i)
+    return ained
+
+def joonista_aine2(ained):
+    for i in ained:
+        ekraan.blit(aine2, i)
+    return ained
+
 
 # algsätted
 ekraan_x = 600
@@ -39,6 +45,7 @@ ekraan = pygame.display.set_mode((ekraan_x, ekraan_y))
 fps = pygame.time.Clock()
 värava_tekkimine = pygame.USEREVENT
 pygame.time.set_timer(värava_tekkimine, 1200)
+
 liikumine = 0
 
 # vajalikud pildid ja hitboxid
@@ -47,13 +54,17 @@ taust = pygame.image.load('images/background.png').convert()
     # põranda pilt
 põrand = pygame.image.load('images/porand.png').convert()
     # mängija pilt ja hitbox
-mängija = pygame.image.load('images/kast.png').convert_alpha()
-mängija = pygame.transform.scale(mängija,(40,40))
-mängija_rect = mängija.get_rect(center = (150, ekraan_y // 2))
+mängija1 = pygame.image.load('images/kast1.png').convert_alpha()
+mängija2 = pygame.image.load('images/kast2.png').convert_alpha()
+mängija1 = pygame.transform.scale(mängija1,(50,50))
+mängija2 = pygame.transform.scale(mängija2,(50,50))
+mängija_rect = mängija1.get_rect(center = (150, ekraan_y // 2))
     # väravad
 värav = pygame.image.load('images/varav.png').convert()
+värav = pygame.transform.scale(värav, (100,600))
 väravad = []
-ained = []
+ained1 = []
+ained2 = []
 
 # loeb txt failist high skoori
 f = open('high.txt')
@@ -71,6 +82,8 @@ text_skoor = font_skoor.render(f'{int(skoor)} EAP', True, (255, 0, 0))
 text_raskus = font_text.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
 text_raskus_hint = font_text.render('''Vajuta 'K', et muuta raskustaset''', True, (255, 0, 0))
 
+mängija = mängija1
+a = 0
 mäng = False
 while True:
     for event in pygame.event.get():
@@ -86,18 +99,21 @@ while True:
                 if raskus_indeks > 2:
                     raskus_indeks = 0
                 väravad.clear()
-                ained.clear()
+                ained1.clear()
+                ained2.clear()
                 text_raskus = font_text.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
                 pygame.time.set_timer(värava_tekkimine, raskusaste[raskus_indeks][1])
             elif event.key == pygame.K_q and mäng == False:
                 raskus_indeks = 3
                 väravad.clear()
-                ained.clear()
+                ained1.clear()
+                ained2.clear()
                 text_raskus = font_text.render(f'Raskus: {raskus_sõne[raskus_indeks]}', True, (255, 0, 0))
                 pygame.time.set_timer(värava_tekkimine, raskusaste[raskus_indeks][1])
             elif event.key == pygame.K_SPACE and mäng == False:
                 väravad.clear()
-                ained.clear()
+                ained1.clear()
+                ained2.clear()
                 mängija_rect = mängija.get_rect(center = (150, ekraan_y // 2))
                 liikumine = -10
                 skoor = 0
@@ -105,31 +121,51 @@ while True:
                 mäng = True
  
         if event.type == värava_tekkimine:
-            # iga 1.2 sekundi tagant tekitatakse uus paar väravaid
-            punkt = random.randint((ekraan_y * 0.42) // 1 , (ekraan_y * 0.85) // 1)
-            kõrgus = punkt - random.randint(220, 300)
-            kaugus = ekraan_x + 100
-            väravad.extend(tekita_värav(värav, punkt, kõrgus, kaugus))
-            
-            choice = random.choice(text)
-            aine = font.render(choice, True, (255,0,0))
-            aine = pygame.transform.rotate(aine, -90)
-            ained.extend(tekita_värav(aine, punkt, kõrgus, kaugus-14))
-
+            if a == 0:
+                # iga 1.2 sekundi tagant tekitatakse uus paar väravaid
+                punkt = random.randint((ekraan_y * 0.42) // 1 , (ekraan_y * 0.85) // 1)
+                kõrgus = punkt - random.randint(220, 300)
+                kaugus = ekraan_x + 100
+                väravad.extend(tekita_värav(värav, punkt, kõrgus, kaugus))
+                
+                choice = random.choice(text)
+                aine1 = font.render(choice, True, (255,255,255))
+                aine1 = pygame.transform.rotate(aine1, -90)
+                ained1.extend(tekita_värav(aine1, punkt, kõrgus, kaugus-14))
+                a = 1
+            elif a == 1:
+                # iga 1.2 sekundi tagant tekitatakse uus paar väravaid
+                punkt = random.randint((ekraan_y * 0.42) // 1 , (ekraan_y * 0.85) // 1)
+                kõrgus = punkt - random.randint(220, 300)
+                kaugus = ekraan_x + 100
+                väravad.extend(tekita_värav(värav, punkt, kõrgus, kaugus))
+                
+                choice = random.choice(text)
+                aine2 = font.render(choice, True, (255,255,255))
+                aine2 = pygame.transform.rotate(aine2, -90)
+                ained2.extend(tekita_värav(aine2, punkt, kõrgus, kaugus-14))
+                a = 0
+                
     # ekraanile ilmub taust
     ekraan.blit(taust, (0, 0))
     
     if mäng:
         # mängija liikumine
+        if liikumine < 0:
+            mängija = mängija2
+        else:
+            mängija = mängija1
         liikumine += 0.3
         mängija_rect.centery += liikumine
         ekraan.blit(mängija, mängija_rect)
         
         # väravad
         väravad = liiguta_värav(väravad)
-        ained = liiguta_värav(ained)
+        ained1 = liiguta_värav(ained1)
+        ained2 = liiguta_värav(ained2)
         joonista_värav(väravad)
-        joonista_aine(ained)
+        joonista_aine1(ained1)
+        joonista_aine2(ained2)
         ekraan.blit(text_skoor, (ekraan_x // 2 - 33, ekraan_y // 8))
         # collision väravatega
         for i in väravad:
