@@ -59,6 +59,8 @@ mängija1 = pygame.image.load('images/kast1.png').convert_alpha()
 mängija2 = pygame.image.load('images/kast2.png').convert_alpha()
 mängija1 = pygame.transform.scale(mängija1,(50,50))
 mängija2 = pygame.transform.scale(mängija2,(50,50))
+pygame.display.set_icon(mängija1)
+pygame.display.set_caption('Projekt_TELO')
 mängija_rect = mängija1.get_rect(center = (150, ekraan_y // 2))
     # väravad
 värav = pygame.image.load('images/pillar.png').convert_alpha()
@@ -75,7 +77,8 @@ skoor = 0
 
 # fondid
 text = ['  MMP  ', '  AAR  ', '  OOP  ', '  KM1  ', '   DM1   ', '   TMS   ', '   SSE   ',\
-        '   ALGO   ', '   OPSÜS   ', '   PR1   ', '   PR2   ']
+        '   ALGO   ', '   OPSÜS   ', '   PR1   ', '   PR2   ', '   AKT   ', '   ML   ', \
+        '   IAI   ', '   VEEB   ', '   VÕRK1   ', '   TURVE   ', '   ANDMEB   ']
 font = pygame.font.SysFont('cambria', 88)
 font_skoor = pygame.font.SysFont('Roboto', 100)
 font_text = pygame.font.SysFont('Roboto', 38)
@@ -155,8 +158,8 @@ while True:
         #taust liigub
         f -= 2
         if f <= -2844:
-            f = 2
-            c = 802
+            f = 0
+            c = 800
         ekraan.blit(taust, (f, 0))
         if f < -2044 and f > -2844:
             c -= 2
