@@ -53,7 +53,7 @@ taust = pygame.image.load('images/background.png').convert_alpha()
 taust = pygame.transform.scale(taust, (2844, 800))
     # põranda pilt
 põrand = pygame.image.load('images/floor.png').convert_alpha()
-põrand = pygame.transform.scale(põrand, (480,80))
+põrand = pygame.transform.scale(põrand, (600,80))
     # mängija pilt ja hitbox
 mängija1 = pygame.image.load('images/kast1.png').convert_alpha()
 mängija2 = pygame.image.load('images/kast2.png').convert_alpha()
@@ -74,9 +74,9 @@ f.close()
 skoor = 0
 
 # fondid
-text = ['  MMP  ', '  AAR  ', '  OOP  ', '  KM1  ', '   DM1   ', '   TMS   ', '   SSE   '\
+text = ['  MMP  ', '  AAR  ', '  OOP  ', '  KM1  ', '   DM1   ', '   TMS   ', '   SSE   ',\
         '   ALGO   ', '   OPSÜS   ', '   PR1   ', '   PR2   ']
-font = pygame.font.SysFont('Roboto', 100)
+font = pygame.font.SysFont('cambria', 88)
 font_skoor = pygame.font.SysFont('Roboto', 100)
 font_text = pygame.font.SysFont('Roboto', 38)
 text_high_skoor = font_text.render(f'Parim tulemus: {high_skoor} EAP', True, (11, 74, 184))
@@ -113,6 +113,8 @@ while True:
             elif event.key == pygame.K_SPACE and mäng == False:
                 f = 2
                 c = 802
+                g = 3
+                h = 603
                 väravad.clear()
                 ained1.clear()
                 ained2.clear()
@@ -125,28 +127,28 @@ while True:
  
         if event.type == värava_tekkimine:
             if a == 0:
-                # iga 1.2 sekundi tagant tekitatakse uus paar väravaid
+                # tekitatakse uus paar väravaid
                 punkt = random.randint((ekraan_y * 0.42) // 1 , (ekraan_y * 0.85) // 1)
                 kõrgus = punkt - random.randint(220, 300)
                 kaugus = ekraan_x + 100
                 väravad.extend(tekita_värav(värav, punkt, kõrgus, kaugus))
                 
                 choice = random.choice(text)
-                aine1 = font.render(choice, True, (100, 100, 100))
+                aine1 = font.render(choice, True, (11, 74, 184))
                 aine1 = pygame.transform.rotate(aine1, -90)
-                ained1.extend(tekita_värav(aine1, punkt, kõrgus, kaugus-14))
+                ained1.extend(tekita_värav(aine1, punkt, kõrgus, kaugus))
                 a = 1
             elif a == 1:
-                # iga 1.2 sekundi tagant tekitatakse uus paar väravaid
+                # tekitatakse uus paar väravaid
                 punkt = random.randint((ekraan_y * 0.42) // 1 , (ekraan_y * 0.85) // 1)
                 kõrgus = punkt - random.randint(220, 300)
                 kaugus = ekraan_x + 100
                 väravad.extend(tekita_värav(värav, punkt, kõrgus, kaugus))
                 
                 choice = random.choice(text)
-                aine2 = font.render(choice, True, (0, 174, 237))
+                aine2 = font.render(choice, True, (11, 74, 184))
                 aine2 = pygame.transform.rotate(aine2, -90)
-                ained2.extend(tekita_värav(aine2, punkt, kõrgus, kaugus-14))
+                ained2.extend(tekita_värav(aine2, punkt, kõrgus, kaugus))
                 a = 0
                 
     if mäng:
@@ -160,6 +162,15 @@ while True:
             c -= 2
             ekraan.blit(taust, (c,0))
         
+        # põrand liigub
+        g -= 3
+        h -= 3
+        if g <= -600:
+            g = 0
+            h = 600
+        ekraan.blit(põrand, (g, ekraan_y - 80))
+        ekraan.blit(põrand, (h, ekraan_y - 80))
+            
         # mängija liikumine
         if liikumine < 0:
             mängija = mängija2
@@ -185,7 +196,7 @@ while True:
                 skoor += 0.5
                 text_skoor = font_skoor.render(f'{int(skoor)}', True, (11, 74, 184))
         # collision põranda, katusega
-        if mängija_rect.top <= 0 or mängija_rect.bottom >= ekraan_y - 80:
+        if mängija_rect.top <= 0 or mängija_rect.bottom >= ekraan_y:
             mäng = False
         
     else:
@@ -207,8 +218,8 @@ while True:
         ekraan.blit(text_high_skoor, (20, 20))
         ekraan.blit(text_skoor, (ekraan_x // 2 - 33, ekraan_y // 8))
     
-    # ekraanile ilmub põrand
-    ekraan.blit(põrand, (0, ekraan_y - 80))
+        # ekraanile ilmub põrand
+        ekraan.blit(põrand, (0, ekraan_y - 80))
     
     pygame.display.update()
     fps.tick(raskusaste[raskus_indeks][0])
